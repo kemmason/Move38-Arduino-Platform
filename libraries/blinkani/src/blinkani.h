@@ -48,7 +48,7 @@ void blink( Color onColor , uint16_t onDurration_ms);
 // blink specified number of times
 void strobe( uint16_t occurances, Color onColor,  uint16_t onDurration_ms, Color offColor , uint16_t offDurration );
 
-// black off, 50% duty cycle. 
+// black off, 50% duty cycle.
 void strobe( uint16_t occurances, Color onColor,  uint16_t period_ms );
 
 
@@ -63,7 +63,7 @@ void spin( uint16_t occurances, Color onColor, Color offColor , uint16_t stepTim
 
 
 // send the color you want to fade to, the duration of the fade
-void fadeTo( Color newColor, uint16_t duration);
+void fadeTo( Color fromColor, Color toColor, uint16_t duration_ms);
 
 Color getColor();
 
