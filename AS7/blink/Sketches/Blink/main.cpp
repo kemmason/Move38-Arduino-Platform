@@ -66,6 +66,11 @@ byte mode = DEAD;
 Timer modeTimeout;     // Started when we enter ATTACKING, when it expires we switch back to normal ALIVE. 
                        // Started when we are injured to make sure we don't get injured multiple times on the same attack
 
+#define USE_ENGUARDE_FLASH true
+#define ENGUARDE_FLASH_TIME_MS 500
+Timer enguardeTimer;  // Count down to switching enguarde flash mode
+bool enguardeFlag = true; // flag for enguardeColor
+
 #include "Serial.h"
 
 ServicePortSerial sp;
@@ -138,6 +143,28 @@ class Health {
 
 Health health(MAX_HEALTH); 
 	
+void setEnguardeColor() {
+  if (!USE_ENGUARDE_FLASH) {
+    setColor(CYAN);
+    return;
+  }
+
+  if (enguardeTimer.isExpired()) {
+    enguardeFlag = !enguardeFlag;
+    enguardeTimer.set(ENGUARDE_FLASH_TIME_MS);
+  }
+  if (enguardeFlag) {
+    setAliveColor();
+  }
+  else {
+    setColor(RED);
+  }
+}
+
+void setAliveColor() {
+  setColor( dim( teamColor( teamIndex) , ( health.get() * MAX_BRIGHTNESS ) / MAX_HEALTH ) );
+}
+
 void loop() {
   
   // Update our mode first  
@@ -157,6 +184,7 @@ void loop() {
     mode=ALIVE;
     health.set(INITIAL_HEALTH);
     healthTimer.set(HEALTH_STEP_TIME_MS);
+    enguardeTimer.set(ENGUARDE_FLASH_TIME_MS);
   }
   
   if (healthTimer.isExpired()) {
@@ -259,11 +287,11 @@ void loop() {
       break;
       
     case ALIVE:
-      setColor( dim( teamColor( teamIndex) , ( health.get() * MAX_BRIGHTNESS ) / MAX_HEALTH ) );   
+      setAliveColor();
       break;
     
     case ENGUARDE:
-      setColor( CYAN );
+      setEnguardeColor();
       break;
     
     case ATTACKING:
